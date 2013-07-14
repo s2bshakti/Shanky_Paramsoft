@@ -4,31 +4,33 @@ exempt_tax_items=['chocolates','chocolate','pills','books','book']
 sales_tax=0
 total=0
 input_basket=[]
-100.times do 
+100.times do
   flag=0
   each_item=gets.chomp
   break if each_item == 'E'
   each_item=each_item.split(' ')
   input_basket << each_item
-  no_of_item=each_item.first
+  no_of_item=each_item.first.to_f
   price=each_item.last.to_f
 
   exempt_tax_items.each do |item|
     flag=1 if each_item.include? item
   end
   if flag == 0
-    each_item[-1]=(((each_item[-1].to_f+(price*0.1))*20).round)/20.0
-    sales_tax+=((price*0.1*20).round)/20.0
-    total+=each_item[-1]
+    each_item[-1]=sprintf("%.2f",(each_item[-1].to_f+(((no_of_item*price*0.1*20).ceil)/20.0 )))
+    sales_tax+=((no_of_item*price*0.1*20).ceil)/20.0
   end
   if each_item.include? 'imported'
-    each_item[-1]=(((each_item[-1].to_f+(price*0.05))*20).round)/20.0
-    sales_tax=((price*0.05*20).round)/20.0
-    total+=(price*0.05).round(2)
+    #p ((price*0.05*20).round)/20.0
+    each_item[-1]=sprintf("%.2f",(each_item[-1].to_f+(((no_of_item*price*0.05*20).ceil)/20.0 )))
+    #p each_item[-1]
+    sales_tax+=((no_of_item*price*0.05*20).ceil)/20.0
   end
+  total+=each_item[-1].to_f
+  each_item.map! { |x| x == 'at' ? ':' : x }
 end
 input_basket.each do |t|
   puts t.join(' ')
 end
-p "Sales Taxes: #{sales_tax}"
-p "Total: #{total}"
+printf("Sales Taxes: %.2f\n",sales_tax)
+printf("Total: %.2f",total)
